@@ -61,6 +61,10 @@ function extractTime(result) {
 	result.time = (titleExtractedTime || extractData('.adresse + div', 'Horaires'));
 }
 
+function extractSummary(result) {
+	result.summary = casper.fetchText('.fiche-header-text div p:first-child');
+}
+
 function splitTime(result) {
 	var split = /([0-9]{1,2})h? ?-? ?([0-9]{0,2})h?/.exec(result.time);
 	if (split) {
@@ -80,6 +84,7 @@ var loadEvent = function loadEvent(url, callback) {
 		
 		result.title = casper.fetchText('h1');
 		
+		extractSummary(result);
 		extractPlace(result);
 		extractDate(result);
 		extractTime(result);
