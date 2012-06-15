@@ -98,9 +98,12 @@ casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
 	var urls = events.urls;
 	for (var i = 0; i < 10/*urls.length*/; i++)
 		loadEvent(urls[i], function(values) {
-			for (var key in values)
-				if (values.hasOwnProperty(key))
-					console.log(key, '-> "' + values[key] + '"');
+			for (var key in values) {
+				if (values.hasOwnProperty(key)) {
+					if (values[key])
+						console.log(key, '-> "' + values[key] + '"');
+				}
+			}
 		});
 });
 
