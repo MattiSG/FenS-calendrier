@@ -17,10 +17,6 @@ var findAllEvents = function findAllEvents() {
 }
 
 var handlers = {
-	'.dates':	/Date : (.+)/,
-	'.lieu':	/Lieu : (.+)/,
-	'.adresse':	/Adresse : (.+)/,
-	'.adresse + div':	/Horaires : (.+)/,
 	'.adresse + div + div':	/Type : (.+)/,
 	'.adresse + div + div + div':	/Evénement : (.+)/,
 	'.adresse + div + div + div + div':	/Tarif : (.+)/,
@@ -48,6 +44,9 @@ function extractPlace(result) {
 
 function extractDate(result) {
 	result.date = extractData('.dates', 'Date');
+	
+	if (result.date)
+		result.date = result.date.replace(/ ?juin/i, '');
 }
 
 function extractTime(result) {
@@ -77,7 +76,6 @@ function splitTime(result) {
 
 var loadEvent = function loadEvent(url, callback) {
 	casper.thenOpen(url, function buildEvent() {
-		console.log('\n==========\n');
 		var result = {
 			url: url
 		}
@@ -95,52 +93,58 @@ var loadEvent = function loadEvent(url, callback) {
 }
 
 
-var exportAllToICal = function exportAllToICal(events) {
+var iCalHeader = function iCalHeader() {
 	var result = [
 		'BEGIN:VCALENDAR',
 		'VERSION:2.0',
 		'PRODID:MattiSG_FuturEnSeine'
 	];
 	
-	for (var i = 0; i < events.length; i++)
-		result = result.concat(events[i]);
-	
-	result.push('END:VCALENDAR');
-	
-	return result.join('\n');
+	return result.join('\n');	
 }
-	
+
 var exportToICal = function exportToICal(event) {
 	var result = [
 		'BEGIN:VEVENT',
 		'UID:' + event.title.replace(/ /g, '_'),
-		'CN:' + event.title
+		'SUMMARY:' + event.title,
+		'URL:' + event.url
 	];
 	
 	if (event.summary)
-		result.push('SUMMARY:' + event.summary.replace(/\n/g, ' '));
+		result.push('DESCRIPTION:' + event.summary.replace(/\n/g, ' '));
 	
 	if (event.place)
 		result.push('LOCATION:' + event.place);
 	
-	if (event.time && event.time.start)
-		result.push('DTSTART:' + event.date + 'T' + event.time.start);
+	if (event.date && event.time && event.time.start)
+		result.push('DTSTART:201206' + event.date	// easy: the date necessarily has two digits
+					+ 'T' + event.time.start + '0000Z');
 
-	if (event.time && event.time.end)
+	if (event.date && event.time && event.time.end)
 		result.push('DTEND:' + event.date + 'T' + event.time.start);
 		
 	result.push('END:VEVENT');
 	
-	return result;
+	return result.join('\n');
+}
+
+var iCalFooter = function iCalFooter() {
+	return 'END:VCALENDAR';
 }
 
 
 casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
 	var events = findAllEvents();
 	var urls = events.urls;
-	for (var i = 0; i < 10/*urls.length*/; i++)
+
+	console.log(iCalHeader());
+	for (var i = 0; i < urls.length; i++) {
 		loadEvent(urls[i], function(values) {
-			console.log(exportToICal(values).join('\n'));
+			if (values.date)
+				console.log(exportToICal(values));
+//			else
+//				console.error('Missing date for', values.url, ' :(');
 /*			for (var key in values) {
 				if (values.hasOwnProperty(key)) {
 					if (values[key])
@@ -149,6 +153,11 @@ casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
 			}
 */
 		});
+	}
 });
 
-casper.run();
+casper.run(function() {
+	console.log(iCalFooter());
+	
+	casper.exit();
+});
