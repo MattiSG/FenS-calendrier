@@ -76,7 +76,6 @@ function splitTime(result) {
 
 var loadEvent = function loadEvent(url, callback) {
 	casper.thenOpen(url, function buildEvent() {
-		console.log('accessing', url);
 		var result = {
 			url: url
 		}
@@ -155,26 +154,23 @@ var iCalFooter = function iCalFooter() {
 }
 
 
-casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
-	var events = findAllEvents();
-	var urls = events.urls;	
 
-//	console.log(iCalHeader());
-	for (var i = 0; i < urls.length; i++) {
-		console.log(urls[i]);
-/*		loadEvent(urls[i], function(values) {
-			if (values.date)
-				console.log(
-					exportToICal(values)
-				);
-			else
-				console.error('Missing date for', values.url, ' :(');
-		});*/
+casper.cli.drop("cli");
+casper.cli.drop("casper-path");
+
+casper.start('http://google.fr', function() {
+	for (var i in casper.cli.args) {
+		if (casper.cli.args.hasOwnProperty(i)) {
+			loadEvent(casper.cli.args[i], function(values) {
+				if (values.date)
+					console.log(
+						exportToICal(values)
+					);
+				else
+					console.error('Missing date for', values.url, ' :(');
+			});
+		}
 	}
 });
 
-casper.run(function() {
-//	console.log(iCalFooter());
-	
-	casper.exit();
-});
+casper.run();
