@@ -69,8 +69,8 @@ function splitTime(result) {
 	var split = /([0-9]{1,2})h? ?-? ?([0-9]{0,2})h?/.exec(result.time);
 	if (split) {
 		result.time = {
-			from: split[1],
-			to: split[2]
+			start: split[1],
+			end: split[2]
 		}
 	}
 }
@@ -95,7 +95,44 @@ var loadEvent = function loadEvent(url, callback) {
 }
 
 
-var urls = [];
+var exportAllToICal = function exportAllToICal(events) {
+	var result = [
+		'BEGIN:VCALENDAR',
+		'VERSION:2.0',
+		'PRODID:MattiSG_FuturEnSeine'
+	];
+	
+	for (var i = 0; i < events.length; i++)
+		result = result.concat(events[i]);
+	
+	result.push('END:VCALENDAR');
+	
+	return result.join('\n');
+}
+	
+var exportToICal = function exportToICal(event) {
+	var result = [
+		'BEGIN:VEVENT',
+		'UID:' + event.title.replace(/ /g, '_'),
+		'CN:' + event.title
+	];
+	
+	if (event.summary)
+		result.push('SUMMARY:' + event.summary.replace(/\n/g, ' '));
+	
+	if (event.place)
+		result.push('LOCATION:' + event.place);
+	
+	if (event.time && event.time.start)
+		result.push('DTSTART:' + event.date + 'T' + event.time.start);
+
+	if (event.time && event.time.end)
+		result.push('DTEND:' + event.date + 'T' + event.time.start);
+		
+	result.push('END:VEVENT');
+	
+	return result;
+}
 
 
 casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
@@ -103,12 +140,14 @@ casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
 	var urls = events.urls;
 	for (var i = 0; i < 10/*urls.length*/; i++)
 		loadEvent(urls[i], function(values) {
-			for (var key in values) {
+			console.log(exportToICal(values).join('\n'));
+/*			for (var key in values) {
 				if (values.hasOwnProperty(key)) {
 					if (values[key])
 						console.log(key, '-> "' + values[key] + '"');
 				}
 			}
+*/
 		});
 });
 
