@@ -38,6 +38,14 @@ function extractData(selector, type) {
 	return result;
 }
 
+function extractPlace(result) {
+	result.place = extractData('.lieu', 'Lieu');
+	
+	var address = extractData('.address', 'Adresse');
+	if (address)
+		result.place += ', ' + address;
+}
+
 function extractDate(result) {
 	result.date = extractData('.dates', 'Date');
 }
@@ -72,6 +80,7 @@ var loadEvent = function loadEvent(url, callback) {
 		
 		result.title = casper.fetchText('h1');
 		
+		extractPlace(result);
 		extractDate(result);
 		extractTime(result);
 		splitTime(result);
