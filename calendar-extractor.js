@@ -53,10 +53,19 @@ function extractTime(result) {
 	result.time = (titleExtractedTime || extractData('.adresse + div', 'Horaires'));
 }
 
+function splitTime(result) {
+	var split = /([0-9]{1,2})h? ?-? ?([0-9]{0,2})h?/.exec(result.time);
+	if (split) {
+		result.time = {
+			from: split[1],
+			to: split[2]
+		}
+	}
+}
+
 var loadEvent = function loadEvent(url, callback) {
-	console.log('loading url', url);
 	casper.thenOpen(url, function buildEvent() {
-		console.log('callback for', url);
+		console.log('\n==========\n');
 		var result = {
 			url: url
 		}
@@ -65,6 +74,7 @@ var loadEvent = function loadEvent(url, callback) {
 		
 		extractDate(result);
 		extractTime(result);
+		splitTime(result);
 		
 		callback(result);
 	});
@@ -77,11 +87,11 @@ var urls = [];
 casper.start('http://www.futur-en-seine.fr/calendrier/', function main() {
 	var events = findAllEvents();
 	var urls = events.urls;
-	for (var i = 0; i < 3/*urls.length*/; i++)
+	for (var i = 0; i < 10/*urls.length*/; i++)
 		loadEvent(urls[i], function(values) {
 			for (var key in values)
 				if (values.hasOwnProperty(key))
-					console.log(key, '->', values[key]);
+					console.log(key, '-> "' + values[key] + '"');
 		});
 });
 
