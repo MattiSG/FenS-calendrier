@@ -94,7 +94,6 @@ var exportToICal = function exportToICal(event) {
 var exportOneToICal = function exportOneToICal(event) {
 	var result = [
 		'BEGIN:VEVENT',
-		'UID:' + event.title.replace(/ /g, '_'),
 		'SUMMARY:' + event.title,
 		'URL:' + event.url
 	];
