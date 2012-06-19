@@ -23,11 +23,16 @@ function extractPlace(result) {
 		result.place += ', ' + address;
 }
 
-function extractDate(result) {
-	result.date = extractData('.dates', 'Date');
+function extractDates(result) {
+	result.dates = extractData('.dates', 'Date');
 	
-	if (result.date)
-		result.date = result.date.replace(/ ?juin/i, '');
+	if (result.dates)	//single-day event
+		return result.dates = [ result.date.replace(/ ?juin/i, '') ];
+		
+	result.dates = extractData('.dates', 'Dates');
+	
+	if (result.dates)	//multi-day event
+		return result.dates = result.dates.replace(/ ?juin/i, '').split(',');
 }
 
 function extractTime(result) {
@@ -65,7 +70,7 @@ var loadEvent = function loadEvent(url, callback) {
 		
 		extractSummary(result);
 		extractPlace(result);
-		extractDate(result);
+		extractDates(result);
 		extractTime(result);
 		splitTime(result);
 		
@@ -73,35 +78,20 @@ var loadEvent = function loadEvent(url, callback) {
 	});
 }
 
+var exportToICal = function exportToICal(event) {
+	var result = '';
 
-var iCalHeader = function iCalHeader() {
-	var result = [
-		'BEGIN:VCALENDAR',
-		'VERSION:2.0',
-		'PRODID:MattiSG_FuturEnSeine',
-		'BEGIN:VTIMEZONE',
-		'TZID:Europe/Paris',
-		'BEGIN:DAYLIGHT',
-		'TZOFFSETFROM:+0100',
-		'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU',
-		'DTSTART:19810329T020000',
-		'TZNAME:GMT+02:00',
-		'TZOFFSETTO:+0200',
-		'END:DAYLIGHT',
-		'BEGIN:STANDARD',
-		'TZOFFSETFROM:+0200',
-		'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU',
-		'DTSTART:19961027T030000',
-		'TZNAME:GMT+01:00',
-		'TZOFFSETTO:+0100',
-		'END:STANDARD',
-		'END:VTIMEZONE'
-	];
+	if (event.dates) {
+		for (var i = 0; i < event.dates.length; i++) {
+			event.date = event.dates[i].trim();
+			result += exportOneToICal(event);
+		}
+	}
 	
-	return result.join('\n');	
+	return result;
 }
 
-var exportToICal = function exportToICal(event) {
+var exportOneToICal = function exportOneToICal(event) {
 	var result = [
 		'BEGIN:VEVENT',
 		'UID:' + event.title.replace(/ /g, '_'),
@@ -126,14 +116,10 @@ var exportToICal = function exportToICal(event) {
 					+ '00');
 		
 	result.push('END:VEVENT');
+	result.push('');
 	
 	return result.join('\n');
 }
-
-var iCalFooter = function iCalFooter() {
-	return 'END:VCALENDAR';
-}
-
 
 
 casper.cli.drop("cli");
@@ -143,7 +129,7 @@ casper.start('http://google.fr', function() {
 	for (var i in casper.cli.args) {
 		if (casper.cli.args.hasOwnProperty(i)) {
 			loadEvent(casper.cli.args[i], function(values) {
-				if (values.date)
+				if (values.dates)
 					console.log(
 						exportToICal(values)
 					);
