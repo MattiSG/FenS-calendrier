@@ -2,25 +2,6 @@ var casper = require('casper').create({
 	verbose: true
 });
 
-var findAllEvents = function findAllEvents() {
-	return casper.evaluate(function() {
-		var result = {
-			urls: []
-		}
-		
-		$('.box').children('a').each(function(index, elm) {
-			result.urls.push($(elm).attr('href'));
-		});
-		
-		return result;
-	});
-}
-
-var handlers = {
-	'.adresse + div + div':	/Type : (.+)/,
-	'.adresse + div + div + div':	/Evénement : (.+)/,
-	'.adresse + div + div + div + div':	/Tarif : (.+)/,
-}
 
 function extractData(selector, type) {
 	var result = casper.fetchText(selector);
