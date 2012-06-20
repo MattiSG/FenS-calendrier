@@ -27,7 +27,7 @@ function extractDates(result) {
 	result.dates = extractData('.dates', 'Date');
 	
 	if (result.dates)	//single-day event
-		return result.dates = [ result.date.replace(/ ?juin/i, '') ];
+		return result.dates = [ result.dates.replace(/ ?juin/i, '') ];
 		
 	result.dates = extractData('.dates', 'Dates');
 	
