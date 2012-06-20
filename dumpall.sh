@@ -23,13 +23,13 @@ echo 'TZOFFSETTO:+0100' >> $FILE
 echo 'END:STANDARD' >> $FILE
 echo 'END:VTIMEZONE' >> $FILE
 
-for url in $(cat urls.txt) # $(casperjs calendar-extractor.js)
+for url in $(casperjs calendar-extractor.js)
 do
 	echo "➠ $url"
 	result=$(casperjs calendar-generator.js $url)
 	
 	if ! echo $result | grep 'Missing date'
-	then echo $result >> $FILE
+	then echo "$result" >> $FILE
 	fi
 done
 
