@@ -103,16 +103,19 @@ var exportOneToICal = function exportOneToICal(event) {
 	
 	if (event.place)
 		result.push('LOCATION:' + event.place);
-	
-	if (event.date && event.time && event.time.start)
+		
+	if (event.time) {		
 		result.push('DTSTART:201206' + event.date	// easy: the date necessarily has two digits
-					+ 'T' + event.time.start
-					+ '00');
-
-	if (event.date && event.time && event.time.end != '0000')
-		result.push('DTEND:201206' + event.date
-					+ 'T' + event.time.end
-					+ '00');
+						+ 'T' + event.time.start
+						+ '00');
+	
+		if (event.time.end != '0000')
+			result.push('DTEND:201206' + event.date
+						+ 'T' + event.time.end
+						+ '00');
+	} else {	// full-day event
+		result.push('DTSTART;VALUE=DATE:201206' + event.date)
+	}
 		
 	result.push('END:VEVENT');
 	result.push('');
