@@ -6,7 +6,8 @@ function handleContent(content) {
 		result = {};
 
 	paragraphHandlers.forEach(function(handler, index) {
-		result = Object.merge(result, handler(paragraphs[index].trim()));
+		if (paragraphs[index])
+			result = Object.merge(result, handler(paragraphs[index].trim()));
 	});
 	
 	return result;
@@ -22,13 +23,16 @@ var paragraphHandlers = [
 			result = {};
 
 		['type', 'place', 'date', 'time'].forEach(function(key, index) {
-			result[key] = slashParts[index].trim();
+			if (slashParts[index])
+				result[key] = slashParts[index].trim();
 		});
 
-		var times = result.time.split('à');
+		if (result.time) {
+			var times = result.time.split('à');
 
-		result.timeStart = extractTime(times[0]);
-		result.timeEnd = extractTime(times[1]);
+			result.timeStart = extractTime(times[0]);
+			result.timeEnd = extractTime(times[1]);
+		}
 
 		return result;
 	},
@@ -50,6 +54,9 @@ var paragraphHandlers = [
 	function(paragraph) {
 		var parts = paragraph.match(/LatLng\(["']([0-9.]+)["'], ["']([0-9.]+)["']\)/);
 
+		if (! parts)
+			return {};
+		
 		return {
 			'lat': parts[1],
 			'lng': parts[2]
