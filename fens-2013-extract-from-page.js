@@ -1,11 +1,5 @@
 require('mootools');
 
-// var casper = require("casper").create();
-
-// casper.start('file:///Users/matti/Downloads/www.futur-en-seine.fr/fens2013/fensevent/4g-quelle-strategie-pour-un-veritable-decollage/index.html', function() {
-//     this.echo(handleContent(this.fetchText('.post-content')));
-// }).run();
-
 
 function handleContent(content) {
 	var paragraphs = content.trim().split(/\n[\t\n ]*\n/),
@@ -63,4 +57,5 @@ var paragraphHandlers = [
 	}
 ]
 
-console.log(handleContent(require('fs').readFileSync('fens-data.txt').toString()));
+
+exports.handleContent = handleContent;
