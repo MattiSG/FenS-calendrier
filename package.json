@@ -1,0 +1,21 @@
+{
+  "name": "FenS-calendar",
+  "version": "0.2.0",
+  "description": "An iCal generator scraping events from Futur en Seine",
+  "main": "calendar-extractor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MattiSG/FenS-calendrier.git"
+  },
+  "keywords": [
+    "iCal"
+  ],
+  "author": "Matti Schneider <hi@mattischneider.fr> (http://mattischneider.fr)",
+  "license": "WTFPL",
+  "dependencies": {
+    "casper": "~0.1.0"
+  }
+}
