@@ -19,7 +19,7 @@ function getUrls(callback) {
 }
 
 function makeUrl(eventName) {
-	return 'file://' + pathUtils.join(__dirname, dataFolder, eventName);
+	return 'file://' + pathUtils.join(__dirname, dataFolder, eventName, 'index.html');
 }
 
 
