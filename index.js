@@ -28,7 +28,10 @@ getUrls(function(error, urls) {
 			filename = 'content/' + parts[parts.length - 2] + '.txt';	// folder name, not index.html
 
 		if (fs.existsSync(filename)) {
-			console.log('Already extracted, skipping', filename);
+			var result = handleContent(fs.readFileSync(filename).toString());
+			result.source = filename;
+			console.log(result);
+
 			return handleOne(index + 1);
 		}
 
@@ -37,12 +40,11 @@ getUrls(function(error, urls) {
 		extract(url, function(content) {
 			fs.writeFile(filename, content, function(err) {
 				if (err)
-					console.log('Error writing', filename);
-				else
-					console.log('Wrote', filename)
+					return console.log('Error writing', filename);
+				
+				console.log('Wrote', filename);
 			});
-			// console.log('Loaded ' + url + '. Extracting content…')
-			// console.log(handleContent(content));
+			
 			handleOne(index + 1);
 		});
 	}
