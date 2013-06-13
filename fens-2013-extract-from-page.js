@@ -14,7 +14,13 @@ function handleContent(content) {
 }
 
 function extractTime(text) {
-	return text.match(/[0-9]{1,2}[h:][0-9]{1,2}/)[0];
+	if (! text)
+		return;
+
+	var match = text.match(/[0-9]{1,2}[h:][0-9]{1,2}/);
+
+	if (match)
+		return match[0];
 }
 
 var paragraphHandlers = [
