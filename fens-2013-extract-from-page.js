@@ -18,7 +18,7 @@ function extractTime(text) {
 		return;
 
 	var match = text.match(/[0-9]{1,2}[h:][0-9]{1,2}/);
-
+	
 	if (match)
 		return match[0];
 }
@@ -34,7 +34,7 @@ var paragraphHandlers = [
 		});
 
 		if (result.time) {
-			var times = result.time.split('à');
+			var times = result.time.split(/[à-]/);
 
 			result.timeStart = extractTime(times[0]);
 			result.timeEnd = extractTime(times[1]);
