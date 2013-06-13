@@ -23,6 +23,9 @@ var CONCURRENT_EXTRACTIONS = 3;
 
 getUrls(function(error, urls) {
 	function handleOne(index) {
+		if (index >= urls.length)
+			return;
+
 		var url = urls[index],
 			parts = url.split('/'),
 			filename = 'content/' + parts[parts.length - 2] + '.txt';	// folder name, not index.html
